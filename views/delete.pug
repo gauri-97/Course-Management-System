@@ -1,0 +1,13 @@
+html
+    body
+        h1  Welcome to delete a  course page
+        hr
+        h2 Fill the following details
+            form(action="/delete" method="POST")
+                input(type="text" name="id" placeholder="Course id")
+                br
+                select(name="delete")
+                    option(value="No", selected="true") No
+                    option(value="Yes") Yes
+                input(type="Submit" value="Submit")
+        span #{message}

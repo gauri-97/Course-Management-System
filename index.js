@@ -15,38 +15,44 @@ var courses={
     'CSE1001':{
         'title':"Programming",
         'numStud':6,
-        'startDate':"2019-03-04",
+        'startDate':"2019-04-03",
         'status':'active'
     },
     'ECM1002':{
         'title':"Machine learning",
         'numStud':4,
-        'startDate':"2019-02-05",
-        'status':'inactive'
+        'startDate':"2019-03-05",
+        'status':'active'
     },
     'ECE1001':{
         'title':"Hardware",
         'numStud':6,
-        'startDate':"2019-03-06",
+        'startDate':"2019-03-03",
         'status':'active'
     },
     'ENG1001':{
         'title':"English",
         'numStud':10,
-        'startDate':"2019-03-06",
+        'startDate':"2019-03-02",
         'status':'active'
     },
     'PHY1001':{
         'title':"Physics",
-        'numStud':6,
-        'startDate':"2019-03-06",
+        'numStud':3,
+        'startDate':"2019-02-08",
         'status':'active'
     }
 
 }
-
+// to get the date
+var today = new Date(); 
+var dd = today.getDate(); 
+var mm = today.getMonth()+1; 
+var yyyy = today.getFullYear();
+var today=dd+"-"+mm+'-'+yyyy;
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
 
 app.set('views', './views');
 app.set('view engine','pug');
@@ -79,6 +85,7 @@ app.post('/signup',(req,res)=>{
             dict.name=result.value.name;
             dict.type=result.value.type;
             dict.password=result.value.password;
+            if(dict.type==="Student")
             dict.registered=[];
             userDetails[result.value.username]=dict;
             if(dict.type==="Student")
@@ -88,7 +95,8 @@ app.post('/signup',(req,res)=>{
                 res.render('studenthome',{courses,username,userdetails})
             }
             else{
-                res.render('facultyhome')
+                var username=result.value.username;
+                res.render('facultyhome',{courses,username})
             }
         }        
     }
@@ -119,7 +127,8 @@ app.post('/login',(req,res)=>{
                     res.render('studenthome',{courses,username,userdetails})
                 }
                 else{
-                res.render('facultyhome')
+                var username=result.value.username;
+                res.render('facultyhome',{courses,username});
                 }
             }//if
             else{
@@ -141,6 +150,10 @@ app.get('/course/:id/:username',(req,res)=>{
         if(element===id)
             flag="yes"
     });
+    if(details.numStud<5)
+    {
+        details.status="inactive"
+    }
     res.render('course',{id,details,flag})
 })
 // to register a student in a course
@@ -166,16 +179,92 @@ app.post('/register',(req,res)=>{
     }
 })
 
-
-
-app.get('/getall',(req,res)=>{
-res.send(userDetails);
+app.get('/coursedetails/:id',(req,res)=>{
+    var id=req.params.id;
+    var details=courses[id];
+    var start=details.startDate;
+    
+    if(new Date(today) > new Date(start))
+    {
+        if(details.numStud<5)
+        details.status="Inactive due to less students"
+        else
+        details.status="Registration Closed"
+    }
+    res.render('coursedetails',{id,details})
+})
+app.get('/add',(req,res)=>{
+res.render('add');
 });
 
-
-
-
-
+app.post('/add',(req,res)=>{
+    const schema = {
+        id: joi.string().min(3).required(),
+        title: joi.string().min(2).required(),
+        startDate: joi.required(),
+        status: joi.string().required(),
+    }
+    const result = joi.validate(req.body, schema)
+    if(result.error) {
+        res.status(404).send(result.error.details[0].message);
+    } else {
+        
+        if (result.value.id in courses) {
+            res.render('add',{message:"Course Id already exist"});
+        }
+        else{
+            var dict={}
+            dict.title=result.value.title;
+            dict.startDate=result.value.startDate;
+            dict.status=result.value.status;
+            dict.numStud=0;
+            courses[result.value.id]=dict;
+            res.send("Successfully added the course");
+        }        
+    }
+})
+app.get('/delete',(req,res)=>{
+    res.render('delete');
+    });
+app.post('/delete',(req,res)=>{
+    const schema = {
+        delete: joi.string().min(2),
+        id:joi.string().required()
+    }
+    const result = joi.validate(req.body, schema)
+    if(result.error) {
+        res.status(404).send(result.error.details[0].message);
+    } else {
+        if(result.value.id in courses){
+            if(result.value.delete==="Yes" ){
+                var id=result.value.id;
+                var temp={}
+                for(var course in courses){
+                    if(course!==id){
+                        temp[course]=JSON.parse(JSON.stringify(courses[course]))
+                    }
+                }
+                courses=JSON.parse(JSON.stringify(temp));
+                temp=JSON.parse(JSON.stringify(userDetails))
+                for(var stud in temp){
+                    if(temp[stud]['type']==='Student'){
+                        var index = temp[stud]['registered'].indexOf('CSE1001')
+                        if(index !== -1) {
+                        temp[stud]['registered'].splice(index, 1)
+                        }
+                    }
+                }
+            }
+            else{
+                res.send("The course was not deleted");
+            }
+        }
+        else{
+            res.render('delete',{message:"Course Id does not exist"});
+        }
+    }
+    res.send("The course was successfully deleted");
+});
 
 app.get('*',(req,res)=>{
 res.send("This is not a valid URL");

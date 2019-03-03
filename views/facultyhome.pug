@@ -1,0 +1,14 @@
+html
+    body
+        h1  Hello #{username} Welcome to the Faculty's Home page
+        hr
+        H3 List of  all the available courses are ,click to see the details:
+        each val,key in courses
+            li
+                a(href="/coursedetails/"+key) #{key}: #{val.title}
+        hr
+        a(href="/add") Add a course
+        hr
+        a(href="/delete") Delete a course
+        
+                
