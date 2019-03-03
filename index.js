@@ -84,7 +84,7 @@ app.post('/signup',(req,res)=>{
             if(dict.type==="Student")
             {
                 var username=result.value.username;
-                var userdetails=userDetails[result.value.username]
+                var userdetails=userDetails[username]
                 res.render('studenthome',{courses,username,userdetails})
             }
             else{
@@ -115,7 +115,7 @@ app.post('/login',(req,res)=>{
                 if(userDetails[result.value.username].type==="Student")
                 {
                     var username=result.value.username;
-                    var userdetails=userDetails[result.value.username]
+                    var userdetails=userDetails[username]
                     res.render('studenthome',{courses,username,userdetails})
                 }
                 else{
@@ -159,7 +159,8 @@ app.post('/register',(req,res)=>{
         if (username in userDetails) {
             userDetails[username].registered.push(result.value.course);
             courses[result.value.course].numStud++;
-            res.send("The course was successfully added");          
+            var userdetails=userDetails[username]
+            res.render('studenthome',{courses,username,userdetails,message:"The course was successfully added"})          
         }
         res.status(404).send('Username Not found');
     }

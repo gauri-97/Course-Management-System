@@ -5,6 +5,7 @@ html
         h3 List of registered courses are:
         for course in userdetails.registered
             li=course 
+        span #{message}
         hr
         H3 List of available courses are:
         each val,key in courses
