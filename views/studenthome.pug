@@ -1,0 +1,12 @@
+html
+    body
+        h1  Hello #{username} Welcome to the Student's Home page
+        hr
+        h3 List of registered courses are:
+        for course in userdetails.registered
+            li=course 
+        hr
+        H3 List of available courses are:
+        each val,key in courses
+            li
+                a(href="/course/"+key+"/"+username ) #{key}: #{val.title}
