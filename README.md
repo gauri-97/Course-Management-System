@@ -24,6 +24,7 @@ Faculties can view
 
 
 -----The courses-----
+ 
 -Each course has a start date and if the course start date has passed and number of registered students <5, the course becomes inactive
 once the course starts new users can't register the course
 
@@ -31,10 +32,10 @@ once the course starts new users can't register the course
 
 Use the following commands to install the external libraries:
 
-npm install express
+'''npm install express
+ 
+'''npm install joi
 
-
-npm install joi
-
+'''npm install pug
 
 The app runs on port 3000
