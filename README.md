@@ -32,10 +32,10 @@ once the course starts new users can't register the course
 
 Use the following commands to install the external libraries:
 
-```npm install express
+```npm install express```
  
-```npm install joi
+```npm install joi```
 
-```npm install pug
+```npm install pug```
 
 The app runs on port 3000
