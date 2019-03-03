@@ -28,7 +28,7 @@ Faculties can view
 -Each course has a start date and if the course start date has passed and number of registered students <5, the course becomes inactive
 once the course starts new users can't register the course
 
-----Libraried to be installed---
+----Libraries to be installed---
 
 Use the following commands to install the external libraries:
 
