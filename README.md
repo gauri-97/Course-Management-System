@@ -12,16 +12,21 @@ I have created a webapp which helps students and faculties to manage courses.
 Student can view:
  
 -List of Registered courses
+  
 -List of available courses
+  
 -The student can click on available courses and register to the new ones and de-register from the already registered courses
 
 
 ----Faculty features----
  
-Faculties can view
+Faculties can view 
+ 
 -List of all available courses
+ 
 -The faculty can click on available courses and see the course details and delete the course
--The faculty can also add new courses or delete existing courses
+
+ -The faculty can also add new courses or delete existing courses
 
 -----Course Features-----
    
