@@ -3,11 +3,16 @@ const joi=require("joi")
 var app=express();
 var port=3000;
 var userDetails={
-    'ggauri97':{
+    'gauri':{
         'name':'Gauri Singh',
         'type':'Student',
         'password':'1234',
         'registered':['CSE1001','ENG1001']
+    },
+    'teacher':{
+        'name':'teacher',
+        'type':'Faculty',
+        'password':'1234',
     }
     
 }
@@ -161,21 +166,59 @@ app.post('/register',(req,res)=>{
     const schema = {
         username: joi.string().min(4).required(),
         register: joi.string().required(),
-        course:  joi.string().required()
+        courseid:  joi.string().required()
     }
     
     const result = joi.validate(req.body, schema)
     if(result.error) {
         res.status(404).send(result.error.details[0].message);
     } else {
-            var username=result.value.username;
-        if (username in userDetails) {
-            userDetails[username].registered.push(result.value.course);
-            courses[result.value.course].numStud++;
-            var userdetails=userDetails[username]
-            res.render('studenthome',{courses,username,userdetails,message:"The course was successfully added"})          
+        if(result.value.register==="Yes"){
+                var username=result.value.username;
+            if (username in userDetails) {
+                userDetails[username].registered.push(result.value.courseid);
+                courses[result.value.courseid].numStud++;
+                var userdetails=userDetails[username]
+                res.render('studenthome',{courses,username,userdetails,message:"The course was successfully registered"})          
+            }
+            res.status(404).send('Username Not found');
         }
-        res.status(404).send('Username Not found');
+        else
+        {
+            res.send("The course was not registered")
+        }
+    }
+})
+app.post('/deletecourse',(req,res)=>{
+    const schema = {
+        username: joi.string().min(4).required(),
+        delete: joi.string().required(),
+        courseid:  joi.string().required()
+    }
+    
+    const result = joi.validate(req.body, schema)
+    if(result.error) {
+        res.status(404).send(result.error.details[0].message);
+    } else {
+        if(result.value.delete ==="Yes"){
+                var username=result.value.username;
+            if (username in userDetails) {
+
+                var userdetails=userDetails[username]
+                if(userdetails.type==='Student'){
+                    index=userdetails.registered.indexOf(result.value.courseid)
+                    if(index!=-1){
+                        userdetails.registered.splice(index,1)
+                    }
+                }
+                res.render('studenthome',{courses,username,userdetails,message:"The course was successfully un-registered"})          
+            }
+            res.status(404).send('Username Not found');
+        }
+        else
+        {
+            res.send("The course was not deleted")
+        }
     }
 })
 
@@ -199,6 +242,7 @@ res.render('add');
 
 app.post('/add',(req,res)=>{
     const schema = {
+        username: joi.string().min(4).required(),
         id: joi.string().min(3).required(),
         title: joi.string().min(2).required(),
         startDate: joi.required(),
@@ -208,19 +252,22 @@ app.post('/add',(req,res)=>{
     if(result.error) {
         res.status(404).send(result.error.details[0].message);
     } else {
-        
-        if (result.value.id in courses) {
-            res.render('add',{message:"Course Id already exist"});
+        var username=result.value.username;
+        if(username in userDetails){
+            if (result.value.id in courses) {
+                res.render('add',{message:"Course Id already exist"});
+            }
+            else{
+                var dict={}
+                dict.title=result.value.title;
+                dict.startDate=result.value.startDate;
+                dict.status=result.value.status;
+                dict.numStud=0;
+                courses[result.value.id]=dict;
+                res.render('facultyhome',{courses,username,message:"Successfully added the course"})
+            }        
         }
-        else{
-            var dict={}
-            dict.title=result.value.title;
-            dict.startDate=result.value.startDate;
-            dict.status=result.value.status;
-            dict.numStud=0;
-            courses[result.value.id]=dict;
-            res.send("Successfully added the course");
-        }        
+        res.status(404).send('Username Not found');
     }
 })
 app.get('/delete',(req,res)=>{
@@ -228,6 +275,7 @@ app.get('/delete',(req,res)=>{
     });
 app.post('/delete',(req,res)=>{
     const schema = {
+        username: joi.string().min(4).required(),
         delete: joi.string().min(2),
         id:joi.string().required()
     }
@@ -235,35 +283,40 @@ app.post('/delete',(req,res)=>{
     if(result.error) {
         res.status(404).send(result.error.details[0].message);
     } else {
-        if(result.value.id in courses){
-            if(result.value.delete==="Yes" ){
-                var id=result.value.id;
-                var temp={}
-                for(var course in courses){
-                    if(course!==id){
-                        temp[course]=JSON.parse(JSON.stringify(courses[course]))
-                    }
-                }
-                courses=JSON.parse(JSON.stringify(temp));
-                temp=JSON.parse(JSON.stringify(userDetails))
-                for(var stud in temp){
-                    if(temp[stud]['type']==='Student'){
-                        var index = temp[stud]['registered'].indexOf('CSE1001')
-                        if(index !== -1) {
-                        temp[stud]['registered'].splice(index, 1)
+        var username=result.value.username;
+        if(username in userDetails){
+            if(result.value.id in courses){
+                if(result.value.delete==="Yes" ){
+                    var id=result.value.id;
+                    var temp={}
+                    for(var course in courses){
+                        if(course!==id){
+                            temp[course]=JSON.parse(JSON.stringify(courses[course]))
                         }
                     }
+                    courses=JSON.parse(JSON.stringify(temp));
+                    temp=JSON.parse(JSON.stringify(userDetails))
+                    for(var stud in temp){
+                        if(temp[stud]['type']==='Student'){
+                            var index = temp[stud]['registered'].indexOf('CSE1001')
+                            if(index !== -1) {
+                            temp[stud]['registered'].splice(index, 1)
+                            }
+                        }
+                    }
+                    res.render('facultyhome',{courses,username,message:"Successfully deleted the course"})
+                }
+                else{
+                    res.render('facultyhome',{courses,username,message:"The course was not deleted"})
                 }
             }
             else{
-                res.send("The course was not deleted");
+                res.render('delete',{message:"Course Id does not exist"});
             }
         }
-        else{
-            res.render('delete',{message:"Course Id does not exist"});
-        }
+        res.status(404).send('Username Not found');
+   
     }
-    res.send("The course was successfully deleted");
 });
 
 app.get('*',(req,res)=>{

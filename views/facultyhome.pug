@@ -6,6 +6,7 @@ html
         each val,key in courses
             li
                 a(href="/coursedetails/"+key) #{key}: #{val.title}
+        span #{message} 
         hr
         a(href="/add") Add a course
         hr
