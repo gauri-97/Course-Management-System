@@ -2,6 +2,8 @@ html
     body
         h1  Hello #{username} Welcome to the Student's Home page
         hr
+        a(href="/") Logout
+        hr
         h3 List of registered courses are:
         for course in userdetails.registered
             li=course 

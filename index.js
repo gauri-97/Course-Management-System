@@ -211,7 +211,7 @@ app.post('/deletecourse',(req,res)=>{
                         userdetails.registered.splice(index,1)
                     }
                 }
-                res.render('studenthome',{courses,username,userdetails,message:"The course was successfully un-registered"})          
+                res.render('studenthome',{courses,username,userdetails,message:"The course was successfully de-registered"})          
             }
             res.status(404).send('Username Not found');
         }

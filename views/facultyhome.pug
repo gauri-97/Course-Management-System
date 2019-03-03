@@ -2,6 +2,8 @@ html
     body
         h1  Hello #{username} Welcome to the Faculty's Home page
         hr
+        a(href="/") Logout
+        hr
         H3 List of  all the available courses are ,click to see the details:
         each val,key in courses
             li
@@ -11,5 +13,6 @@ html
         a(href="/add") Add a course
         hr
         a(href="/delete") Delete a course
+        
         
                 
