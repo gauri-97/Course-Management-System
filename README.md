@@ -23,7 +23,7 @@ Faculties can view
 -The faculty can click on available courses and see the course details and delete the course
 -The faculty can also add new courses or delete existing courses
 
------The courses-----
+-----Course Features-----
    
 -Each course has a start date and if the course start date has passed and number of registered students <5, the course becomes inactive
 once the course starts new users can't register the course
